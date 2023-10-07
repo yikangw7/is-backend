@@ -17,62 +17,10 @@ const corsOptions = {
 router.use(cors(corsOptions));
 
 const pool = mysql.createPool({
-  host: 'localhost',
+  host: '127.0.0.1',
   user: 'yikang',
   password: 'pswd1337',
   database: 'isdb',
-});
-
-// Google Auth
-router.post('/api/auth/callback/google', async (req, res) => {
-  const connection = await pool.getConnection();
-  const { clientId, } = req.body;
-
-  connection.connect((err) => {
-    if (err) {
-      console.error('Error connecting to the database:', err);
-    } else {
-      console.log('Connected to the database');
-    }
-  });
-
-  try {
-    // Insert a new user into the 'users' table
-    // const [results, fields] = await connection.query('INSERT INTO users (username, email) VALUES (?, ?)', [username, email]);
-    console.log(clientId);
-    res.json(results);
-    console.log(results);
-  } catch (error) {
-    console.error(error);
-    res.json(error);
-  } finally {
-    connection.release();
-  }
-});
-router.get('/api/auth/callback/google', async (req, res) => {
-  const connection = await pool.getConnection();
-  const { clientId, } = req.body;
-
-  connection.connect((err) => {
-    if (err) {
-      console.error('Error connecting to the database:', err);
-    } else {
-      console.log('Connected to the database');
-    }
-  });
-
-  try {
-    // Insert a new user into the 'users' table
-    // const [results, fields] = await connection.query('INSERT INTO users (username, email) VALUES (?, ?)', [username, email]);
-    console.log(clientId);
-    res.json(results);
-    console.log(results);
-  } catch (error) {
-    console.error(error);
-    res.json(error);
-  } finally {
-    connection.release();
-  }
 });
 
 // Query Users
@@ -101,7 +49,7 @@ router.get('/api/getUsers', async (req, res) => {
 // Create New User
 router.post('/api/createUser', async (req, res) => {
   const connection = await pool.getConnection();
-  const { username, email } = req.body;
+  const { username, email, password } = req.body;
 
   connection.connect((err) => {
     if (err) {
@@ -113,7 +61,7 @@ router.post('/api/createUser', async (req, res) => {
 
   try {
     // Insert a new user into the 'users' table
-    const [results, fields] = await connection.query('INSERT INTO users (username, email) VALUES (?, ?)', [username, email]);
+    const [results, fields] = await connection.query('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, password]);
     res.json(results);
     console.log(results);
   } catch (error) {
