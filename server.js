@@ -28,6 +28,10 @@ server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
 
+app.get('/players.json', (req, res) => {
+  res.sendFile(__dirname + '/players.json');
+});
+
 // Sample Endpoint
 app.get('/api/hello', (req, res) => {
     res.json({ message: 'TEST ENDPOINT RESPONSE' });
