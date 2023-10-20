@@ -23,6 +23,181 @@ const pool = mysql.createPool({
   database: 'isdb',
 });
 
+// Google User Operations
+// Create New Google User
+router.post('/api/createGoogleUser', async (req, res) => {
+  const connection = await pool.getConnection();
+  const { email } = req.body;
+
+  connection.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err);
+    } else {
+      console.log('Connected to the database');
+    }
+  });
+
+  try {
+    // Insert a new user into the 'google_users' table
+    const [results, fields] = await connection.query('INSERT INTO google_users (email) VALUES (?)', [email]);
+    res.json(results);
+    console.log(results);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+  } finally {
+    connection.release();
+  }
+});
+// Query if User Exists
+router.post('/api/googleUserExists', async (req, res) => {
+  const connection = await pool.getConnection();
+  const { email } = req.body;
+
+  connection.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err);
+    } else {
+      console.log('Connected to the database');
+    }
+  });
+
+  try {
+    // Checks if email exists
+    const [results, fields] = await connection.execute('SELECT * FROM google_users WHERE email = ?', [email]);
+    // Check if any rows were returned (user exists)
+    if (results.length > 0) {
+      // User with the email exists
+      res.json({ exists: true });
+    } else {
+      // User with the email does not exist
+      res.json({ exists: false });
+    }
+    console.log(results);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+  } finally {
+    connection.release();
+  }
+});
+
+// Add User Favourite Player
+router.post('/api/addFavourite', async (req, res) => {
+  const connection = await pool.getConnection();
+  const { id, email } = req.body;
+
+  connection.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err);
+    } else {
+      console.log('Connected to the database');
+    }
+  });
+
+  try {
+    // Insert a new user into the 'google_users' table
+    const [results, fields] = await connection.query('INSERT INTO favourite_players (id, email) VALUES (?, ?)', [id, email]);
+    res.json(results);
+    console.log(results);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+  } finally {
+    connection.release();
+  }
+});
+
+// Delete User's Favourite
+router.delete('/api/deleteFavourite', async (req, res) => {
+  const connection = await pool.getConnection();
+  const { id, email } = req.body;
+
+  connection.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err);
+    } else {
+      console.log('Connected to the database');
+    }
+  });
+
+  try {
+    // Delete a user's favourite by ID
+    const [results, fields] = await connection.query('DELETE FROM favourite_players WHERE id = ? AND email = ?', [id, email]);
+    res.json(results);
+    console.log(results);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+  } finally {
+    connection.release();
+  }
+});
+
+// Find User's Favourite Players
+router.get('/api/getAllFavourites', async (req, res) => {
+  const connection = await pool.getConnection();
+  const email = req.query.email;
+
+  console.log(req);
+  console.log(email);
+
+  connection.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err);
+    } else {
+      console.log('Connected to the database');
+    }
+  });
+
+  try {
+    // Find user's favourites
+    const [results, fields] = await connection.execute('SELECT * FROM favourite_players WHERE email = ?', [email]);
+    res.json(results);
+    console.log(results);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+  } finally {
+    connection.release();
+  }
+});
+
+// Query if is Favourite 
+router.get('/api/isFavourite', async (req, res) => {
+  const connection = await pool.getConnection();
+  const id = req.query.id;
+  const email = req.query.email;
+
+  connection.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err);
+    } else {
+      console.log('Connected to the database');
+    }
+  });
+
+  try {
+    // Checks if email exists
+    const [results, fields] = await connection.execute('SELECT * FROM favourite_players WHERE email = ? AND id = ?', [email, id]);
+    // Check if any rows were returned (user exists)
+    if (results.length > 0) {
+      // User with the email exists
+      res.json({ exists: true });
+    } else {
+      // User with the email does not exist
+      res.json({ exists: false });
+    }
+    console.log(results);
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+  } finally {
+    connection.release();
+  }
+});
+
+
 // Query Users
 router.get('/api/getUsers', async (req, res) => {
   const connection = await pool.getConnection();
